@@ -59,7 +59,7 @@ icom(struct xdp_md *ctx)
 		return XDP_PASS;
 
 	/* 関係ない差出人だったら何もしない（ホストオーダ） */
-#define FROMADDR	0xAC14DE01	/* 172.20.222.1 */
+#define SADDR	0xAC14DE01	/* 172.20.222.1 */
 	if (ip->saddr != __constant_htonl(SADDR))
 		return XDP_PASS;
 

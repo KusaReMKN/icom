@@ -58,18 +58,15 @@ icom(struct xdp_md *ctx)
 	if ((void *)(udp + 1) > data_end)
 		return XDP_PASS;
 
-	/* 関係ない差出人だったら何もしない */
+	/* 関係ない差出人だったら何もしない（ホストオーダ） */
 #define FROMADDR	0xAC14DE01	/* 172.20.222.1 */
 	if (ip->saddr != __constant_htonl(SADDR))
 		return XDP_PASS;
 
-	/* 関係ないポート宛だったら何もしない */
+	/* 関係ないポート宛だったら何もしない（ホストオーダ） */
 #define DESTPORT	5060
 	if (udp->dest != __constant_htons(DESTPORT))
 		return XDP_PASS;
-
-	/* 内容を破壊してみる */
-	void * const payload = (void *)(udp + 1);
 
 	/*
 	 * とりあえずヘッダ行を連結してみる。
@@ -77,6 +74,7 @@ icom(struct xdp_md *ctx)
 	 * に二行に渡るヘッダがある場合にはそれが連結されてしまいそう。まあ、
 	 * しょうがないかもね。
 	 */
+	void * const payload = (void *)(udp + 1);
 	int spindex = findCRLFSP(payload, data_end);
 	if (spindex < 0)
 		return XDP_PASS;
@@ -85,7 +83,6 @@ icom(struct xdp_md *ctx)
 
 	/* チェックサムをポイする */
 	udp->check = 0;
-	ip->check = 0;
 
 	return XDP_PASS;
 }

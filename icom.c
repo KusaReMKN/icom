@@ -16,7 +16,8 @@ findCRLFSP(void const *payload, void const *data_end)
 {
 	int state = 0;
 
-	for (int i = 0; payload + i < data_end && i < 1024; i++) {
+	for (int i = 0; payload + i < data_end && i < 1024; i++)
+	{
 		/* \r\n を探す */
 		if (*(char *)(payload + i) == "\r\n "[state])
 			state++;
@@ -30,22 +31,22 @@ findCRLFSP(void const *payload, void const *data_end)
 }
 
 int SEC("prog")
-icom(struct xdp_md *ctx)
+	icom(struct xdp_md *ctx)
 {
 	/*
 	 * (long) は本来 (intptr_t) であるべき。<stdint.h> を #include すると
 	 * ヘッダファイルの依存関係でトチるっぽい（えっ？）
 	 */
-	void * const data = (void *)(long)ctx->data;
-	void * const data_end = (void *)(long)ctx->data_end;
+	void *const data = (void *)(long)ctx->data;
+	void *const data_end = (void *)(long)ctx->data_end;
 
 	/* Ethernet データフレームより短かかったら何もしない */
-	struct ethhdr * const eth = data;
+	struct ethhdr *const eth = data;
 	if ((void *)(eth + 1) > data_end)
 		return XDP_PASS;
 
 	/* IP ヘッダより短かったら何もしない */
-	struct iphdr * const ip = (struct iphdr *)(eth + 1);
+	struct iphdr *const ip = (struct iphdr *)(eth + 1);
 	if ((void *)(ip + 1) > data_end)
 		return XDP_PASS;
 
@@ -54,17 +55,17 @@ icom(struct xdp_md *ctx)
 		return XDP_PASS;
 
 	/* UDP パケットより短かったら何もしない */
-	struct udphdr * const udp = (struct udphdr *)(ip + 1);
+	struct udphdr *const udp = (struct udphdr *)(ip + 1);
 	if ((void *)(udp + 1) > data_end)
 		return XDP_PASS;
 
 	/* 関係ない差出人だったら何もしない（ホストオーダ） */
-#define FROMADDR	0xAC14DE01	/* 172.20.222.1 */
-	if (ip->saddr != __constant_htonl(SADDR))
+#define FROMADDR 0xAC14DE01 /* 172.20.222.1 */
+	if (ip->saddr != __constant_htonl(FROMADDR))
 		return XDP_PASS;
 
 	/* 関係ないポート宛だったら何もしない（ホストオーダ） */
-#define DESTPORT	5060
+#define DESTPORT 5060
 	if (udp->dest != __constant_htons(DESTPORT))
 		return XDP_PASS;
 
@@ -74,7 +75,7 @@ icom(struct xdp_md *ctx)
 	 * に二行に渡るヘッダがある場合にはそれが連結されてしまいそう。まあ、
 	 * しょうがないかもね。
 	 */
-	void * const payload = (void *)(udp + 1);
+	void *const payload = (void *)(udp + 1);
 	int spindex = findCRLFSP(payload, data_end);
 	if (spindex < 0)
 		return XDP_PASS;

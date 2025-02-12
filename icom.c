@@ -7,6 +7,8 @@
 
 #include <bpf/bpf_helpers.h>
 
+char __license[] SEC("license") = "Dual MIT/GPL";
+
 /*
  * ペイロードのうち、\r\nSP の SP のインデクスを返す。
  * 見付からなければ -1 を返す。

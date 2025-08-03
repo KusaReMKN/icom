@@ -10,6 +10,12 @@
 char __license[] SEC("license") = "Dual MIT/GPL";
 
 /*
+ * IPv4 アドレスを構成するためのヘルパマクロ
+ */
+#define IPv4_ADDR(a, b, c, d) \
+	(((((((__be32)(a) << 8) | (b)) << 8) | (c)) << 8) | (d))
+
+/*
  * ペイロードのうち、\r\nSP の SP のインデクスを返す。
  * 見付からなければ -1 を返す。
  */
@@ -61,7 +67,7 @@ icom(struct xdp_md *ctx)
 		return XDP_PASS;
 
 	/* 関係ない差出人だったら何もしない（ホストオーダ） */
-#define SADDR	0xAC14DE01	/* 172.20.222.1 */
+#define SADDR	IPv4_ADDR(172, 20, 222, 1)
 	if (ip->saddr != __constant_htonl(SADDR))
 		return XDP_PASS;
 

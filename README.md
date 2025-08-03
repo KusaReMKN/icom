@@ -15,7 +15,7 @@ MikoPBX を収容している Ubuntu において、以下の通り実行する�
 # apt install clang llvm libelf-dev libbpf-dev
 # git clone https://github.com/kusaremkn/icom.git # まだ公開されていない
 # cd icom
-# vi icom.c # FROMADDR の定義を icom の IP アドレスに変える
+# vi icom.c # SADDR や DESTPORT の定義を icom の IP アドレスに変える
 # make
 # ip link set eth0 xdp obj icom.o # これで完了
 # ip link set eth0 xdp off # これで元に戻る

@@ -13,7 +13,7 @@ MikoPBX を収容している Ubuntu において、以下の通り実行する�
 ```console
 # apt update && apt upgrade -y
 # apt install clang llvm libelf-dev libbpf-dev
-# git clone https://github.com/kusaremkn/icom.git # まだ公開されていない
+# git clone https://github.com/kusaremkn/icom.git
 # cd icom
 # vi icom.c # SADDR や DESTPORT の定義を icom の IP アドレスに変える
 # make
